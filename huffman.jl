@@ -11,7 +11,7 @@ function ENode(symbol::String,prob::Real, prev_node1::Union{ENode,Nothing}, prev
 end
 
 function Base.show(io::IO, x::ENode)
-	print(io,"ENode(symbol = $(x.symbol),pnode = $(x.p_node),encoding = $(x.encoded_val))")
+	println(io,"symbol = $(x.symbol) | prob = $(x.p_node) | encoding = $(x.encoded_val)")
 end
 
 #Initialize the nodes
@@ -80,4 +80,11 @@ end
 
 #test case
 symbol_probs = [("a1",0.1),("a2",0.4),("a3",0.06),("a4",0.1),("a5",0.04),("a6",0.3)]
-huffman_encoding(symbol_probs)
+nodes = init_nodes(symbol_probs)
+println("$(nodes)")
+nodes |> encoding_tree |> assign_encoding
+for node in nodes
+	println("$(node)")
+end
+
+
