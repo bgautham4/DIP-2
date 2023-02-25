@@ -27,7 +27,10 @@ md"# Gautham B
 md"# Loading the image"
 
 # ╔═╡ b99ff27d-a7b1-4cdd-9dcd-20fc5ed79f27
-lena = testimage("lena_512")
+lena = let
+	lena = testimage("lena_512")
+	lena_resize = imresize(lena,(128,128))
+end
 
 # ╔═╡ 8a2ce1ea-d527-4a90-bdf1-cba6bed06c37
 typeof(lena)
@@ -64,14 +67,17 @@ symbols = [(symbol,prob) for (symbol,prob) in probs]
 md"# Performing the Huffman encoding, given the symbol probabilities"
 
 # ╔═╡ 2b12586a-ee26-4cd6-87df-1cb8acc6155e
-codes = huffman_encoding(symbols)
+begin
+	codes_enc,codes_dec = huffman_encoding(symbols)
+	display(codes_enc)
+end
 
 # ╔═╡ 2254ae4a-33d5-418e-a68f-aa5d70df1782
 begin
 	L_avg = 0
 	H = 0
 	for (symbol,prob) in symbols
-		L_avg += prob * length(codes[symbol])
+		L_avg += prob * length(codes_enc[symbol])
 		H += -log(2,prob) * prob
 	end
 end
@@ -81,6 +87,27 @@ begin
 	println("The Entropy(Expected information) is $(H) bits/pixel")
 	println("The L_average of the encoding is $(L_avg) bits/pixel")
 end
+
+# ╔═╡ 18fc2f85-9921-49da-aab6-c627f7a74843
+md"## Performing encoding for transmission"
+
+# ╔═╡ da928d51-6347-4b0c-bc63-6f18766b81af
+begin
+	encoded_seq = encode_sequence(codes_enc,vec(lena_ints))
+	display(encoded_seq)
+end
+
+# ╔═╡ b7c2445e-3138-4cad-be93-8210551189d8
+md"## Decoding the sequence at the receiver"
+
+# ╔═╡ 978cb925-7e6b-4e6d-b698-4f22098d629d
+decoded_seq = decode_sequence(codes_dec,encoded_seq)
+
+# ╔═╡ f79d4c77-a816-48c3-b509-d083069ad638
+md"## Reconstructing the image after decoding"
+
+# ╔═╡ f8b1e1ea-1e64-4127-a059-2f259d48702f
+Gray.(reshape(decoded_seq,(128,128)) ./ 255)
 
 # ╔═╡ Cell order:
 # ╟─5af4f3e1-248f-4e11-9953-74d28a788152
@@ -102,3 +129,9 @@ end
 # ╠═2b12586a-ee26-4cd6-87df-1cb8acc6155e
 # ╠═2254ae4a-33d5-418e-a68f-aa5d70df1782
 # ╟─d66bea50-739b-44e0-80d7-0d4924c627c6
+# ╟─18fc2f85-9921-49da-aab6-c627f7a74843
+# ╠═da928d51-6347-4b0c-bc63-6f18766b81af
+# ╟─b7c2445e-3138-4cad-be93-8210551189d8
+# ╠═978cb925-7e6b-4e6d-b698-4f22098d629d
+# ╟─f79d4c77-a816-48c3-b509-d083069ad638
+# ╠═f8b1e1ea-1e64-4127-a059-2f259d48702f

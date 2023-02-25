@@ -90,10 +90,12 @@ function huffman_encoding(symbol_probs::Vector)
 	nodes = init_nodes(symbol_probs)
 	nodes |> encoding_tree |> assign_encoding
 	encoding_table = Dict()
+	decoding_table = Dict()
 	for node in nodes
 		encoding_table[node.symbol] = node.encoded_val
+		decoding_table[node.encoded_val] = node.symbol
 	end
-	return encoding_table
+	return encoding_table,decoding_table
 end
 
 #Given the encoding, find its corresponding symbol.
@@ -114,36 +116,36 @@ function encode_sequence(encoding_table::Dict, sequence::Vector)
 end
 
 #Decode the sequence of bits given its encoding table.
-function decode_sequence(seq::String,encoding_table::Dict)
+function decode_sequence(decoding_table::Dict,seq::String)
 	decoded_seq = Vector{Integer}()
 	L = length(seq)
 	i=1
 	j=0
 	while(i<=L)
 		if j>L
+			println("No seq")
 			return nothing
 		end
-		key = find_key(encoding_table,seq[i:i+j])
-		if typeof(key)==Nothing
+		if ~(seq[i:i+j] in keys(decoding_table))
 			j+=1
-		else
-			push!(decoded_seq,key)
-			i = i+j+1
-			j=0
+			continue
 		end
+		key = decoding_table[seq[i:i+j]]
+		push!(decoded_seq,key)
+		i = i+j+1
+		j=0
 	end
 	return decoded_seq
 
 end
-
-"""
+#=
 #test case
 
 symbol_probs = [(1,0.1),(2,0.4),(3,0.06),(4,0.1),(5,0.04),(6,0.3)]
-encoding_table = huffman_encoding(symbol_probs)
-println(encoding_table)
+encoding_table,decoding_table = huffman_encoding(symbol_probs)
+println("$(encoding_table) \n$(decoding_table)")
 encoded_seq = encode_sequence(encoding_table,[1,3,5,1,2,2,2,4,5,5,2,2,1,3,5,4,4,1])
 println(encoded_seq)
-decoded_seq = decode_sequence(encoded_seq,encoding_table)
+decoded_seq = decode_sequence(decoding_table,encoded_seq)
 println(decoded_seq)
-"""
+=#
