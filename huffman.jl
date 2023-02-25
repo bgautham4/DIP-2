@@ -47,7 +47,7 @@ function encoding_tree(nodes::Vector{ENode})
 		end
 		last_node = nodes[end]
 		last_2_node = nodes[end-1]
-		p_new_node = round(last_node.p_node + last_2_node.p_node, digits = 5)#Round the sum of the 2 nodes to prevent floating point sum errors.
+		p_new_node = round(last_node.p_node + last_2_node.p_node, digits = 12)#Round the sum of the 2 nodes to prevent floating point sum errors.
 		symbol_new_node = last_node.symbol * last_2_node.symbol
 		push!(new_nodes,ENode(symbol_new_node,p_new_node,last_2_node,last_node))
 		sort(new_nodes, by = x->x.p_node, rev = true) |> encoding_tree
@@ -135,7 +135,10 @@ function decode_sequence(seq::String,encoding_table::Dict)
 	return decoded_seq
 
 end
+
+"""
 #test case
+
 symbol_probs = [(1,0.1),(2,0.4),(3,0.06),(4,0.1),(5,0.04),(6,0.3)]
 encoding_table = huffman_encoding(symbol_probs)
 println(encoding_table)
@@ -143,3 +146,4 @@ encoded_seq = encode_sequence(encoding_table,[1,3,5,1,2,2,2,4,5,5,2,2,1,3,5,4,4,
 println(encoded_seq)
 decoded_seq = decode_sequence(encoded_seq,encoding_table)
 println(decoded_seq)
+"""
