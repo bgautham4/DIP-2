@@ -98,13 +98,6 @@ function huffman_encoding(symbol_probs::Vector)
 	return encoding_table,decoding_table
 end
 
-#Given the encoding, find its corresponding symbol.
-function find_key(encoding_table::Dict, value::String)
-	for (key,val) in encoding_table
-		val == value ? (return key) : continue
-	end
-	return nothing
-end
 
 #Encode a sequence using its encoding table.
 function encode_sequence(encoding_table::Dict, sequence::Vector)
